@@ -110,4 +110,4 @@ A Windows EXE file is not directly executable on Android. Do not present EXE sup
 
 ## Development status
 
-This repository currently contains the project specification. Functional Android Studio source code, build configuration, and GitHub Actions APK build workflow still need to be added and tested.
+An initial Android Studio project and GitHub Actions debug-APK workflow are now included. The current prototype has a first-run setup wizard, optional password lock screen, desktop, AstraMenu app list with long-press/right-click context actions, persistent Add to Home shortcuts, internal Overlays windows, Astra Settings wallpaper/theme/user-name controls, a Google TV Settings shortcut, a basic file picker/text viewer, Notepad, and Calculator.\n\nThis is an early prototype, not a finished OS. The APK must still complete a successful GitHub Actions build and be tested on the target Google TV device. Some planned features (full file browsing, ZIP extraction, image viewing, persistent notes, richer settings, and YouTube/browser app integration) are not implemented yet.
