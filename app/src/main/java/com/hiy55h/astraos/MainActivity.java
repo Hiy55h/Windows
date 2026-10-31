@@ -192,7 +192,6 @@ public class MainActivity extends Activity {
         else if(app.equals("写真")) body.addView(label("写真を選ぶにはファイルマネージャーを使ってね",16));
         else if(app.equals("タスクマネージャー")) body.addView(label("起動中のウィンドウ: "+openWindows.size(),18));
         else body.addView(label(app,18));
-        shell.addView(body);
         win.addView(shell);
         FrameLayout.LayoutParams wp=new FrameLayout.LayoutParams(Math.min(760,getResources().getDisplayMetrics().widthPixels-40),Math.min(470,getResources().getDisplayMetrics().heightPixels-100),Gravity.CENTER);
         windowLayer.addView(win,wp); openWindows.add(win); win.setOnTouchListener((v,e)->{if(e.getAction()==MotionEvent.ACTION_DOWN)v.bringToFront();return false;});
