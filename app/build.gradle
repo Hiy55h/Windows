@@ -1,0 +1,17 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.hiy55h.astraos'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.hiy55h.astraos'
+        minSdk 30
+        targetSdk 32
+        versionCode 1
+        versionName '0.1.0'
+        ndk { abiFilters 'armeabi-v7a' }
+    }
+}
