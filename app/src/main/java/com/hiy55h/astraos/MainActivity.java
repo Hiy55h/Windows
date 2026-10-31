@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -113,7 +114,7 @@ public class MainActivity extends Activity {
         int y=75;
         for(String app:shortcuts){ addDesktopShortcut(app,18,y); y+=78; }
         LinearLayout bar=new LinearLayout(this); bar.setGravity(Gravity.CENTER_VERTICAL); bar.setPadding(10,4,10,4); bar.setBackgroundColor(0xDD111827);
-        TextView menu=label("✦ AstraMenu",16); menu.setTextColor(Color.WHITE); menu.setBackgroundColor(0xFF263449); menu.setOnClickListener(v->showMenu(menu)); bar.addView(menu);
+        TextView menu=label("✦ AstraMenu",16); menu.setTextColor(Color.WHITE); menu.setBackgroundColor(0xFF263449); menu.setOnClickListener(v->showAppList()); bar.addView(menu);
         TextView user=label(userName,14); user.setTextColor(Color.WHITE); bar.addView(user);
         FrameLayout.LayoutParams bp=new FrameLayout.LayoutParams(-1,58,Gravity.BOTTOM); root.addView(bar,bp);
         base(root);
@@ -125,15 +126,48 @@ public class MainActivity extends Activity {
         icon.setOnClickListener(v->openApp(app));
     }
 
-    private void showMenu(View anchor) {
-        String[] names=apps;
-        new AlertDialog.Builder(this).setTitle("AstraMenu").setItems(names,(d,which)->openApp(names[which])).setNegativeButton("閉じる",null).show();
-        // Right-click / long-press desktop shortcut context menu is supported in the app list dialog below.
-    }
+    private void showMenu(View anchor) { showAppList(); }
 
     private void showAppList() {
-        String[] names=apps;
-        new AlertDialog.Builder(this).setTitle("AstraMenu • アプリ").setItems(names,(d,which)->openApp(names[which])).setNeutralButton("アプリをホームに追加", (d,w)->{}).show();
+        LinearLayout list = column();
+        list.setPadding(12, 8, 12, 8);
+        for (String app : apps) {
+            Button item = new Button(this);
+            item.setText("▣  " + app);
+            item.setOnClickListener(v -> openApp(app));
+            item.setOnLongClickListener(v -> { showAppContext(item, app); return true; });
+            item.setOnContextClickListener(v -> { showAppContext(item, app); return true; });
+            list.addView(item, new LinearLayout.LayoutParams(-1, 58));
+        }
+        ScrollView scroll = new ScrollView(this);
+        scroll.addView(list);
+        new AlertDialog.Builder(this).setTitle("AstraMenu • アプリ").setView(scroll)
+                .setNegativeButton("閉じる", null).show();
+    }
+
+    private void showAppContext(View anchor, String app) {
+        PopupMenu popup = new PopupMenu(this, anchor);
+        popup.getMenu().add("ホームに追加").setOnMenuItemClickListener(item -> {
+            shortcuts.add(app);
+            prefs.edit().putStringSet("shortcuts", new HashSet<>(shortcuts)).apply();
+            if (desktop != null) {
+                desktop.removeAllViews();
+                TextView greeting = label("AstraOS  •  " + userName, 18);
+                greeting.setTextColor(Color.WHITE);
+                greeting.setGravity(Gravity.TOP | Gravity.LEFT);
+                desktop.addView(greeting, new FrameLayout.LayoutParams(-1, 55));
+                int y = 75;
+                for (String shortcut : shortcuts) { addDesktopShortcut(shortcut, 18, y); y += 78; }
+            }
+            toast(app + " をホームに追加しました");
+            return true;
+        });
+        popup.getMenu().add("起動").setOnMenuItemClickListener(item -> { openApp(app); return true; });
+        popup.getMenu().add("アプリ情報").setOnMenuItemClickListener(item -> {
+            new AlertDialog.Builder(this).setTitle(app).setMessage("AstraOS内蔵アプリ").setPositiveButton("OK", null).show();
+            return true;
+        });
+        popup.show();
     }
 
     private void openApp(String app) {
